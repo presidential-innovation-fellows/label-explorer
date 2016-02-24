@@ -1,0 +1,51 @@
+
+
+
+GET /
+
+GET /_cluster/health
+
+GET /_cat/indices?v
+
+GET /labels
+PUT /labels
+
+PUT /labels
+{
+  "mappings": {
+    "label": {
+      "properties": {
+        "registration_id": { "type":"string" },
+        "pdf_content": { 
+            "type": "attachment",
+            "fields": {
+              "content": {
+                "type": "string",
+                "term_vector":"with_positions_offsets",
+                "store": true
+          }
+        }
+        }
+}}}}
+
+POST /labels/label
+{
+    "registration_id":"000100-01169",
+    "pdf_content":""
+}
+
+POST /labels/label/_search
+{
+      "query": {
+            "match": { "pdf_content.content":"epa" }},
+            "highlight": {
+                "fields": {
+                    "pdf_content.content": {
+                    }
+                }
+         }
+}
+
+GET /labels/_mappings
+
+DELETE /labels/

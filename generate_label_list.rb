@@ -1,0 +1,90 @@
+
+
+#search for registration # with a '1' in it
+#element = driver.find_element :name => "p_t04"
+#element.send_keys "1"
+#element.submit
+
+#driver = Selenium::WebDriver.for :firefox
+
+puts "Page title is #{driver.title}"
+
+wait = Selenium::WebDriver::Wait.new(:timeout => 10)
+
+#set to view all records 
+#select = Selenium::WebDriver::Support::Select.new(driver.find_element(:class, "a-IRR-selectList"))
+##select.deselect_all()
+#select.select_by(:text, "All")									
+
+wait = Selenium::WebDriver::Wait.new(:timeout => 60)
+
+begin
+  element = wait.until { driver.find_elements(:xpath => "/tbody/tr[55]") }
+ensure
+  driver.quit
+end
+
+all_registrations = driver.find_elements(:css, ".a-IRR-table tr td a")
+counter = 0
+
+all_registrations.each_with_index do |row,index|
+	counter = counter + 1
+	puts "Registration counter: " + counter.to_s
+ 
+	     #puts row.attrib#ute("innerHTML")
+	     #driver.navigate.back
+     	#wait.until { driver.title.downcase.start_with? "search" }
+
+   	    if row.tag_name == "a" #its a link TD
+	   	    
+      		new_link = row.attribute("href").to_s
+			#Open a new browser window
+			driver.execute_script( "window.open()" )
+
+			#Use the newest window
+			driver.switch_to.window( driver.window_handles.last )
+
+			#Navigate to the url we just extracted
+			driver.get new_link.to_s	#open the individual registration page     	
+
+	     	wait.until { driver.title.downcase.start_with? "details" }
+
+	     	table = driver.find_elements(:css, ".a-IRR-table")[0]#find the table of label updates
+	     	reg_rows = table.find_elements(:css,"tr a")
+
+
+	     	#reg_rows.each_with_index do | label_update, index |
+				#puts "link text: " + label_update.attribute("href")	     		
+	     	#end
+
+	     	cmd = "echo 'curl -o file_" + counter.to_s + " '" + reg_rows[4].attribute("href") + "''"
+	     	puts "cmd is: " + cmd.to_s
+			value = system(cmd)
+
+			driver.close
+			driver.switch_to.window( driver.window_handles.first )
+
+	     	#binding.pry
+
+	     	#open a new tab
+	     end
+	     #check if it is an anchor, if so, open a new browser
+	     #driver.get "http://iaspub.epa.gov/apex/pesticides/f?p=PPLS:1"
+ 
+end
+
+puts "there are " + registrations.length.to_s + "labels"
+
+
+#wait.until { driver.title.downcase.start_with? "cheese!" }
+#doc = Nokogiri::HTML(driver.page_source)
+
+#table = doc.css('a-IRR-table')
+
+#puts "Page title is #{driver.title}"
+
+
+#puts table.to_s
+#puts driver.page_source.to_s
+
+driver.quit
