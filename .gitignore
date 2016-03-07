@@ -1,3 +1,3 @@
 /registrations/
-developer_notes.odt
-.gitignore
+*.odt
+*gitignore
